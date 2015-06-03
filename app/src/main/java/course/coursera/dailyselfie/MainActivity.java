@@ -21,13 +21,14 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    String mCurrentPhotoPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/dailySelfies/";
+    static final String mCurrentPhotoPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/dailySelfies/";
     ListView list;
     ListLoaderTask mListLoaderTask;
     private SelfiesDataSource datasource;
@@ -60,15 +61,16 @@ public class MainActivity extends ActionBarActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
+                Environment.DIRECTORY_PICTURES+"/dailySelfies/");
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
-                storageDir      /* directory */
+                storageDir       /* directory */
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        //mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        //cache_uri = imageFileName+".jpg";
         cache_uri = image.getAbsolutePath();
         return image;
     }
@@ -85,12 +87,12 @@ public class MainActivity extends ActionBarActivity {
         datasource = new SelfiesDataSource(this);
         datasource.open();
 
-        List<Selfie> values = datasource.getAllSelfies();
+        ArrayList<Selfie> values = datasource.getAllSelfies();
 
         // use the SimpleCursorAdapter to show the
         // elements in a ListView
-        Selfie[] array = values.toArray(new Selfie[values.size()]);
-        MyCustomArrayAdapter adapter = new MyCustomArrayAdapter(getApplicationContext(),array);
+        //Selfie[] array = values.toArray(new Selfie[values.size()]);
+        MyCustomArrayAdapter adapter = new MyCustomArrayAdapter(getApplicationContext(),values);
         list.setAdapter(adapter);
 
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +14,19 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.util.ArrayList;
+
 /**
  * Created by Guillermo Celarie on 31/05/2015.
  */
 public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
     private final Context context;
-    private final Selfie[] values;
+    private final ArrayList<Selfie> values;
     private View rowView;
+    static final File mCurrentPhotoPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
-    public MyCustomArrayAdapter(Context context, Selfie[] values) {
+    public MyCustomArrayAdapter(Context context, ArrayList<Selfie> values) {
         super(context, -1, values);
         this.context = context;
         this.values = values;
@@ -35,9 +40,10 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
         TextView textViewTitle = (TextView) rowView.findViewById(R.id.firstLine);
         TextView textViewDate = (TextView) rowView.findViewById(R.id.secondLine);
         //ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-        ImageView imageView = setPic(values[position].getUri());
-        textViewTitle.setText(values[position].getUri());
-        textViewDate.setText("Taken: "+ values[position].getDate());
+        Selfie[] array = values.toArray(new Selfie[values.size()]);
+        ImageView imageView = setPic(array[position].getUri());
+        textViewTitle.setText(array[position].getUri());
+        textViewDate.setText("Taken: "+ array[position].getDate());
         // change the icon for Windows and iPhone
         //String s = values[position];
         /*if (s.startsWith("iPhone")) {
@@ -51,7 +57,7 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
 
     private ImageView setPic(String uri) {
         // Get the dimensions of the View
-        ImageView mImageView = (ImageView) rowView.findViewById(R.id.icon);
+        ImageView mImageView = (ImageView) rowView.findViewById(R.id.selfie_thumb);
         int targetW = mImageView.getWidth();
         int targetH = mImageView.getHeight();
 

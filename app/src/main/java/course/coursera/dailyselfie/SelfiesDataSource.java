@@ -54,8 +54,8 @@ public class SelfiesDataSource {
                 + " = " + id, null);
     }
 
-    public List<Selfie> getAllSelfies() {
-        List<Selfie> comments = new ArrayList<Selfie>();
+    public ArrayList<Selfie> getAllSelfies() {
+        ArrayList<Selfie> comments = new ArrayList<Selfie>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_SELFIES,
                 allColumns, null, null, null, null, null);
