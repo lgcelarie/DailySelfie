@@ -1,5 +1,7 @@
 package course.coursera.dailyselfie;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -29,10 +31,15 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final String mCurrentPhotoPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/dailySelfies/";
+    private static final long TWO_MINUTES = 120 * 1000L;
     ListView list;
     ListLoaderTask mListLoaderTask;
     private SelfiesDataSource datasource;
     private String cache_uri;
+    private AlarmManager mAlarmManager;
+    private Intent mSelfieNotificationIntent;
+    private PendingIntent mSelfiePendingIntent;
+
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -87,14 +94,23 @@ public class MainActivity extends ActionBarActivity {
         datasource = new SelfiesDataSource(this);
         datasource.open();
 
-        ArrayList<Selfie> values = datasource.getAllSelfies();
+        final ArrayList<Selfie> values = datasource.getAllSelfies();
 
         // use the SimpleCursorAdapter to show the
         // elements in a ListView
         //Selfie[] array = values.toArray(new Selfie[values.size()]);
         MyCustomArrayAdapter adapter = new MyCustomArrayAdapter(getApplicationContext(),values);
         list.setAdapter(adapter);
-
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent fullSelfieIntent = new Intent(Intent.ACTION_VIEW);
+                fullSelfieIntent.setDataAndType(Uri.parse("file://" + values.get(i).getUri()), "image/*");
+                startActivity(fullSelfieIntent);
+            }
+        });
+        createPendingIntents();
+        createSelfieReminders();
 
     }
 
@@ -140,6 +156,22 @@ public class MainActivity extends ActionBarActivity {
             //mImageView.setImageBitmap(imageBitmap);
         }
     }
+
+    private void createPendingIntents() {
+        // Create the notification pending intent
+        mSelfieNotificationIntent = new Intent(MainActivity.this, SelfieNotificationReciever.class);
+        mSelfiePendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, mSelfieNotificationIntent, 0);
+    }
+    private void createSelfieReminders() {
+        mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // Broadcast the notification intent at specified intervals
+        mAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP
+                , System.currentTimeMillis() + TWO_MINUTES
+                , TWO_MINUTES
+                , mSelfiePendingIntent);
+
+    }
     class ListLoaderTask extends AsyncTask<Void,Void,ArrayAdapter<String>> {
         Context context;
         ProgressDialog pDialog;
@@ -171,4 +203,5 @@ public class MainActivity extends ActionBarActivity {
             pDialog.dismiss();
         }
     }
+
 }

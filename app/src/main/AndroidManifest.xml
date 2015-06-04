@@ -21,6 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".FullViewActivity"
+            android:label="Full View" >
+        </activity>
+        <receiver android:name=".SelfieNotificationReciever" >
+        </receiver>
     </application>
 
 </manifest>
