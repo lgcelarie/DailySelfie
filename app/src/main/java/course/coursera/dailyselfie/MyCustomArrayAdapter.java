@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
 import org.w3c.dom.Text;
 
 import java.io.File;
@@ -41,7 +42,8 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
         TextView textViewDate = (TextView) rowView.findViewById(R.id.secondLine);
         //ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         Selfie[] array = values.toArray(new Selfie[values.size()]);
-        ImageView imageView = setPic(array[position].getUri());
+        ImageView imageView =  (ImageView) rowView.findViewById(R.id.selfie_thumb); //setPic(array[position].getUri());
+        imageView.setImageBitmap(BitmapFactory.decodeFile(array[position].getUri()));
         textViewTitle.setText(array[position].getUri());
         textViewDate.setText("Taken: "+ array[position].getDate());
         // change the icon for Windows and iPhone
