@@ -7,4 +7,6 @@
     <string name="default_filename">Default FileName</string>
     <string name="default_date">Default Date</string>
     <string name="loading_items">Loading Items...</string>
+    <string name="delete_item">Delete Selfie</string>
+    <string name="item_deleted">Selfie Deleted</string>
 </resources>

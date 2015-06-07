@@ -40,24 +40,19 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
         rowView = inflater.inflate(R.layout.list_item, parent, false);
         TextView textViewTitle = (TextView) rowView.findViewById(R.id.firstLine);
         TextView textViewDate = (TextView) rowView.findViewById(R.id.secondLine);
-        //ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         Selfie[] array = values.toArray(new Selfie[values.size()]);
-        ImageView imageView =  (ImageView) rowView.findViewById(R.id.selfie_thumb); //setPic(array[position].getUri());
-        imageView.setImageBitmap(BitmapFactory.decodeFile(array[position].getUri()));
-        textViewTitle.setText(array[position].getUri());
+        ImageView imageView =  (ImageView) rowView.findViewById(R.id.selfie_thumb);
+        if(isFileExsist(array[position].getUri()))
+            imageView.setImageBitmap(BitmapFactory.decodeFile(array[position].getUri()));
+
+        textViewTitle.setText(array[position].getUri().substring(array[position].getUri().lastIndexOf("/")+1));
         textViewDate.setText("Taken: "+ array[position].getDate());
-        // change the icon for Windows and iPhone
-        //String s = values[position];
-        /*if (s.startsWith("iPhone")) {
-            imageView.setImageResource(R.drawable.no);
-        } else {
-            imageView.setImageResource(R.drawable.ok);
-        }*/
+
 
         return rowView;
     }
 
-    private ImageView setPic(String uri) {
+    /*private ImageView setPic(String uri) {
         // Get the dimensions of the View
         ImageView mImageView = (ImageView) rowView.findViewById(R.id.selfie_thumb);
         int targetW = mImageView.getWidth();
@@ -72,7 +67,7 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
@@ -82,7 +77,17 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
         Bitmap bitmap = BitmapFactory.decodeFile(uri, bmOptions);
         mImageView.setImageBitmap(bitmap);
         return mImageView;
+    }*/
+
+    public Boolean isFileExsist(String filepath) {
+        File file = new File(filepath);
+        if(file.exists())
+            return true;
+        else
+            return false;
     }
+
+
 }
 
 

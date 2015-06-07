@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,12 +35,13 @@ public class MainActivity extends ActionBarActivity {
     static final String mCurrentPhotoPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/dailySelfies/";
     private static final long TWO_MINUTES = 120 * 1000L;
     ListView list;
-    ListLoaderTask mListLoaderTask;
+    MyCustomArrayAdapter adapter;
     private SelfiesDataSource datasource;
     private String cache_uri;
     private AlarmManager mAlarmManager;
     private Intent mSelfieNotificationIntent;
     private PendingIntent mSelfiePendingIntent;
+    ArrayList<Selfie> values;
 
 
     private void dispatchTakePictureIntent() {
@@ -94,18 +96,15 @@ public class MainActivity extends ActionBarActivity {
             Log.e("MainActivity :: ", "Problem creating Image folder");
         }
 
-        /*mListLoaderTask = new ListLoaderTask();
-        mListLoaderTask.execute();
-*/
         datasource = new SelfiesDataSource(this);
         datasource.open();
 
-        final ArrayList<Selfie> values = datasource.getAllSelfies();
+        values = datasource.getAllSelfies();
 
         // use the SimpleCursorAdapter to show the
         // elements in a ListView
-        //Selfie[] array = values.toArray(new Selfie[values.size()]);
-        MyCustomArrayAdapter adapter = new MyCustomArrayAdapter(getApplicationContext(),values);
+
+        adapter = new MyCustomArrayAdapter(getApplicationContext(),values);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -117,6 +116,7 @@ public class MainActivity extends ActionBarActivity {
         });
         createPendingIntents();
         createSelfieReminders();
+        registerForContextMenu(list);
 
     }
 
@@ -153,13 +153,6 @@ public class MainActivity extends ActionBarActivity {
             selfie = datasource.createSelfie(cache_uri,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             adapter.add(selfie);
 
-
-
-
-
-           /* Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");*/
-            //mImageView.setImageBitmap(imageBitmap);
         }
     }
 
@@ -178,36 +171,32 @@ public class MainActivity extends ActionBarActivity {
                 , mSelfiePendingIntent);
 
     }
-    class ListLoaderTask extends AsyncTask<Void,Void,ArrayAdapter<String>> {
-        Context context;
-        ProgressDialog pDialog;
-
-        @Override
-        protected void onPreExecute() {
-            // TODO Auto-generated method stub
-            super.onPreExecute();
-
-            pDialog = new ProgressDialog(context);
-            pDialog.setMessage(context.getString(R.string.loading_items));
-            pDialog.setCancelable(true);
-            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            pDialog.show();
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        if (v.getId() == R.id.imageListView) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            menu.add(R.string.delete_item);
         }
+    }
 
-        @Override
-        public  ArrayAdapter<String> doInBackground(Void... arg0)
-        {
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayAdapter<String> result) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(result);
-            list.setAdapter(result);
-            pDialog.dismiss();
-        }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Selfie mSelfie;
+        File sFile;
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
+                .getMenuInfo();
+        mSelfie = values.get(info.position);
+        values.remove(info.position);
+        sFile = new File(mSelfie.getUri());
+        if(sFile.exists())
+            sFile.delete();
+        datasource.deleteSelfie(mSelfie);
+        adapter.notifyDataSetChanged();
+        Toast.makeText(getApplicationContext(),R.string.item_deleted,Toast.LENGTH_SHORT).show();
+        return true;
     }
 
 }

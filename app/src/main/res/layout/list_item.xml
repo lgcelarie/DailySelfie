@@ -6,10 +6,11 @@
 
     <ImageView
         android:id="@+id/selfie_thumb"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
         android:layout_marginRight="2dip"
         android:contentDescription="TODO"
         android:src="@drawable/no_image" />
@@ -21,11 +22,11 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/selfie_thumb"
-        android:ellipsize="marquee"
-        android:singleLine="true"
         android:text="@string/default_date"
         android:textSize="12sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black"
+        android:singleLine="true"
+        android:ellipsize="marquee"/>
 
     <TextView
         android:id="@+id/firstLine"
@@ -39,6 +40,8 @@
         android:gravity="center_vertical"
         android:text="@string/default_filename"
         android:textSize="16sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black"
+        android:singleLine="true"
+        android:ellipsize="marquee"/>
 
 </RelativeLayout>
