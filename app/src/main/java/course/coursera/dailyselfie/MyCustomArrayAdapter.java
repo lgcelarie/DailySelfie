@@ -43,7 +43,8 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
         Selfie[] array = values.toArray(new Selfie[values.size()]);
         ImageView imageView =  (ImageView) rowView.findViewById(R.id.selfie_thumb);
         if(isFileExsist(array[position].getUri()))
-            imageView.setImageBitmap(BitmapFactory.decodeFile(array[position].getUri()));
+            setPic(array[position].getUri());
+            //imageView.setImageBitmap(BitmapFactory.decodeFile(array[position].getUri()));
 
         textViewTitle.setText(array[position].getUri().substring(array[position].getUri().lastIndexOf("/")+1));
         textViewDate.setText("Taken: "+ array[position].getDate());
@@ -52,17 +53,18 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
         return rowView;
     }
 
-    /*private ImageView setPic(String uri) {
+    private void setPic(String uri) {
         // Get the dimensions of the View
         ImageView mImageView = (ImageView) rowView.findViewById(R.id.selfie_thumb);
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
+        int targetW = 100; //mImageView.getWidth();
+        int targetH = 100; //mImageView.getHeight();
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        if(BitmapFactory.decodeFile(uri, bmOptions) == null)
-            return mImageView;
+        BitmapFactory.decodeFile(uri, bmOptions);
+        /*if(BitmapFactory.decodeFile(uri, bmOptions) == null)
+            return mImageView;*/
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
@@ -76,8 +78,8 @@ public class MyCustomArrayAdapter extends ArrayAdapter<Selfie> {
 
         Bitmap bitmap = BitmapFactory.decodeFile(uri, bmOptions);
         mImageView.setImageBitmap(bitmap);
-        return mImageView;
-    }*/
+        //return mImageView;
+    }
 
     public Boolean isFileExsist(String filepath) {
         File file = new File(filepath);
